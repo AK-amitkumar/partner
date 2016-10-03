@@ -6,10 +6,10 @@
 
 ##############################################################################
 
-from openerp.osv import osv
-from openerp.osv import fields
+from openerp import models
+from openerp import fields
 
-class res_partner(osv.osv):
+class res_partner(models.Model):
     '''
     Add social media to res.partner
     '''
@@ -17,11 +17,11 @@ class res_partner(osv.osv):
     _inherit = 'res.partner'
     _description = 'Add social media to Partner'
 
-    _columns = {
-        'facebook':fields.char('Facebook', size=64, required=False, readonly=False),
-        'twitter':fields.char('Twitter', size=64, required=False, readonly=False),
-        'skype':fields.char('Skype', size=64, required=False, readonly=False),
-    }
+
+    facebook = fields.Char('Facebook', size=64, required=False, readonly=False)
+    twitter = fields.Char('Twitter', size=64, required=False, readonly=False)
+    skype = fields.Char('Skype', size=64, required=False, readonly=False)
+
     
     def goto_facebook(self, cr, uid, ids, context=None):
         partner_obj = self.pool.get('res.partner')

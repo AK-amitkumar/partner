@@ -5,7 +5,7 @@
 ##############################################################################
 
 from openerp import models, fields, api, _
-from openerp.osv import fields as old_fields
+from openerp import fields as old_fields
 from openerp.exceptions import Warning
 
 
@@ -31,9 +31,9 @@ class res_partner(models.Model):
     # Igualemtne, despues de penarlo y agregar el company_dependt vimos mejor que no porque en realida dun partner
     # aprobado podria estar para todos, de hecho si lo hacemos properties, trabajando desde la padre, contra quien
     # verificamos? seria medio lio
-    _columns = {
-        'company_partner_state': old_fields.related('company_id', 'partner_state', type='boolean'),
-    }
+
+    company_partner_state = fields.Related('company_id', 'partner_state', type='boolean')
+
 
     partner_state = fields.Selection(
         '_get_partner_states',
@@ -113,7 +113,7 @@ class res_partner(models.Model):
         # TODO we should use company of modified partner
         for line in self.env.user.company_id.partner_state_field_ids:
             if line.track and line.field_id.name in updated_fields:
-                tracked_fields.append(line.field_id.name)
+                tracked_fields.Append(line.field_id.name)
 
         if tracked_fields:
             return self.fields_get(tracked_fields)

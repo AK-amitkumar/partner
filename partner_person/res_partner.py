@@ -5,7 +5,6 @@
 ##############################################################################
 from openerp import models, fields, api
 from datetime import date
-from openerp.osv import fields as old_fields
 
 
 class res_partner(models.Model):
@@ -249,10 +248,11 @@ class res_partner(models.Model):
         # Se agrega national_identity aqui
     }
 
-    _columns = {
-        'display_name': old_fields.function(
-            _display_name, type='char', string='Name',
-            store=_display_name_store_triggers, select=True),
-    }
+
+    display_name = fields.Char(
+            compute=_display_name, string='Name',
+            #store=_display_name_store_triggers, select=True
+    )
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
