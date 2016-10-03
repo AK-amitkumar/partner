@@ -5,7 +5,7 @@
 ##############################################################################
 import re
 import unicodedata
-from openerp.osv import osv, fields
+from openerp import models, fields
 from openerp import SUPERUSER_ID
 from openerp.tools.translate import _
 from openerp.tools import email_split
@@ -31,7 +31,7 @@ def remove_accents(input_str):
     return u''.join([c for c in nkfd_form if not unicodedata.combining(c)])
 
 
-class partner(osv.osv):
+class partner(models.Model):
 
     """"""
 
@@ -54,14 +54,14 @@ class partner(osv.osv):
             res[i] = user_id
         return res
 
-    _columns = {
-        'login': fields.related('related_user_id', 'login', string='Login', type='char', size=64, readonly=True,
+
+    login = fields.Related('related_user_id', 'login', string='Login', type='char', size=64, readonly=True
                                 help="Used to log into the system"),
-        'password': fields.related('related_user_id', 'password', string='Password', type='char', size=64, readonly=True,
+    password = fields.Related('related_user_id', 'password', string='Password', type='char', size=64, readonly=True
                                    help="Keep empty if you don't want the user to be able to connect on the system."),
-        'related_user_id': fields.function(_retrieve_user, relation='res.users', string='User', type='many2one', ),
-        'template_user_id': fields.many2one('res.users', string="Template User", domain=[('active', '=', False)],),
-    }
+    related_user_id = fields.Many2one(compute="_retrieve_user", relation='res.users', string='User', )
+    template_user_id = fields.Many2one('res.users', string="Template User", domain=[('active', '=', False)],)
+
 
     def open_related_user(self, cr, uid, ids, context=None):
         user_id = self.browse(
@@ -110,7 +110,7 @@ class partner(osv.osv):
         for partner in self.browse(cr, SUPERUSER_ID, ids, context):
             group_ids = []
             if not partner.template_user_id:
-                raise osv.except_osv(_('Non template user selected!'),
+                raise UserError(_('Non template user selected!'),
                                      _('Please define a template user for this partner: "%s" (id:%d).') % (partner.name, partner.id))
             group_ids = [x.id for x in partner.template_user_id.groups_id]
             user_ids = self.retrieve_user(cr, SUPERUSER_ID, partner, context)
